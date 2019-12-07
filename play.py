@@ -5,11 +5,14 @@ from termios import tcflush, TCIFLUSH
 import time, sys, os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
+def console_print(text):
+    print(text + "\r")
+
 def select_game():
     with open(YAML_FILE, 'r') as stream:
         data = yaml.safe_load(stream)
 
-    print("Pick a setting.")
+    print("Pick a setting.\r")
     settings = data["settings"].keys()
     for i, setting in enumerate(settings):
         print_str = str(i) + ") " + setting
@@ -31,7 +34,7 @@ def select_game():
 
     setting_key = list(settings)[choice]
 
-    print("\nPick a character")
+    print("\nPick a character\r")
     characters = data["settings"][setting_key]["characters"]
     for i, character in enumerate(characters):
         console_print(str(i) + ") " + character)
@@ -70,31 +73,31 @@ def play_aidungeon_2():
 
     upload_story = True
 
-    print("\nInitializing AI Dungeon! (This might take a few minutes)\n")
+    print("\nInitializing AI Dungeon! (This might take a few minutes)\n\r")
     generator = GPT2Generator()
     story_manager = UnconstrainedStoryManager(generator)
-    print("\n")
+    print("\n\r")
 
     with open('opening.txt', 'r') as file:
         starter = file.read()
-    print(starter)
+    print(starter + "\r")
 
     while True:
         if story_manager.story != None:
             del story_manager.story
 
-        print("\n\n")
+        print("\n\n\r")
         context, prompt = select_game()
         console_print(instructions())
-        print("\nGenerating story...")
+        print("\nGenerating story...\r")
 
         story_manager.start_new_story(prompt, context=context, upload_story=upload_story)
 
         print("\n")
         console_print(str(story_manager.story))
         while True:
-            tcflush(sys.stdin, TCIFLUSH)
-            action = input("> ")
+            # tcflush(sys.stdin, TCIFLUSH)
+            action = input(">\r")
             if action == "restart":
                 rating = input("Please rate the story quality from 1-10: ")
                 rating_float = float(rating)
